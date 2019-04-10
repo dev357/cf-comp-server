@@ -1,15 +1,32 @@
+import jwt from 'jsonwebtoken';
+
 export const user = {
   id: 'test',
   email: 'test@test.com',
-  roles: ['admin', 'user']
+  roles: ['admin', 'user'],
+  password: 'test'
 };
 
 const aadu = {
   id: 'aadu',
-  email: 'aadu@lammas.ee'
+  email: 'aadu@lammas.ee',
+  password: 'aadu'
 };
 
 const users = [user, aadu];
+
+const { JWT_SECRET } = process.env;
+
+const generateToken = () => {
+  return jwt.sign(
+    {
+      id: 'test',
+      role: ['ADMIN', 'USER']
+    },
+    JWT_SECRET,
+    { expiresIn: '1d' }
+  );
+};
 
 export default {
   Query: {
@@ -27,10 +44,11 @@ export default {
 
   Mutation: {
     signUp: (root, args, req, info) => {
-      return user;
+      console.log('signup');
+      return generateToken();
     },
     signIn: (root, args, req, info) => {
-      return user;
+      return generateToken();
     },
     signOut: (root, args, req, info) => {
       return true;

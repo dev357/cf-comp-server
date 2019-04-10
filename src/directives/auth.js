@@ -1,20 +1,21 @@
 import { SchemaDirectiveVisitor } from 'apollo-server-express';
 import { defaultFieldResolver } from 'graphql';
-import { ensureSignedIn } from '../auth';
+import { authenticate, checkRole } from '../auth';
 
 class AuthDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
     const { resolve = defaultFieldResolver } = field;
     const { roles } = this.args;
 
-    field.resolve = function(...args) {
-      console.log(this);
-      console.log(this.args);
-      const [, , context] = args;
+    field.resolve = function(root, args, context, info) {
+      console.log('Authdirective');
 
-      ensureSignedIn(context.req);
+      const auth = authenticate(context);
+      const newContext = { ...context, auth };
 
-      return resolve.apply(this, args);
+      checkRole(newContext, roles);
+
+      return resolve.apply(this, root, args, { ...context, auth }, info);
     };
   }
 }
