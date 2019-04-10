@@ -1,39 +1,48 @@
 import { AuthenticationError } from 'apollo-server-express';
 import jwt from 'jsonwebtoken';
 
-export const ensureSignedIn = req => {
-  console.log(`auth: ${req.headers.auth}`);
-  console.log(`roles: ${req.headers.roles}`);
-  if (req.headers.auth != true) {
-    throw new AuthenticationError('You must be signed in');
-  }
+import { User } from './models';
+
+const { JWT_SECRET } = process.env;
+
+export const generateToken = user => {
+  console.log({
+    id: user.id,
+    roles: user.roles
+  });
+  return jwt.sign(
+    {
+      id: user.id,
+      roles: user.roles
+    },
+    JWT_SECRET,
+    { expiresIn: '20h' }
+  );
 };
 
 export const authenticate = context => {
   const authorization = context.req.get('Authorization');
-  console.log(authorization);
+  // console.log(authorization);
 
   if (!authorization) throw new AuthenticationError('Not authorized!');
 
   const token = authorization.replace('Bearer ', '');
 
   try {
-    const secret = process.env.JWT_SECRET;
-
-    if (!secret) {
+    if (!JWT_SECRET) {
       throw new Error(
         'Secret not provided, please provide "JWT_SECRET" with your token'
       );
     }
 
-    return jwt.verify(token, secret);
+    return jwt.verify(token, JWT_SECRET);
   } catch (error) {
     throw new AuthenticationError('Invalid token!');
   }
 };
 
-export const checkRole = (context, requiredRoles) => {
-  const userRoles = context.auth.role;
+export const checkRoles = (context, requiredRoles) => {
+  const userRoles = context.auth.roles;
 
   if (!userRoles) {
     throw new Error(`Invalid token payload, missing role property`);
@@ -45,11 +54,25 @@ export const checkRole = (context, requiredRoles) => {
       .includes(requiredRole.toLowerCase())
   );
 
-  console.log({ userRoles, requiredRoles, hasNeededRole });
+  // console.log({ userRoles, requiredRoles, hasNeededRole });
 
   if (!hasNeededRole) {
     throw new Error(
       `Must have role: ${requiredRoles}, you have role: ${userRoles}`
     );
   }
+};
+
+export const attemptSignIn = async (email, password) => {
+  const message = 'Incorrect email or password. Please try again.';
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new AuthenticationError(message);
+  }
+
+  if (!(await user.matchesPassword(password))) {
+    throw new AuthenticationError(message);
+  }
+
+  return user;
 };

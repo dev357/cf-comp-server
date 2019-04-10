@@ -24,10 +24,10 @@ const IN_PROD = NODE_ENV === 'production';
 
     server.applyMiddleware({ app });
 
-    // await mongoose.connect(
-    //   `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}?retryWrites=true`,
-    //   { useNewUrlParser: true }
-    // );
+    await mongoose.connect(
+      `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}?retryWrites=true`,
+      { useNewUrlParser: true }
+    );
 
     await app.listen({ port: APP_PORT });
     console.log(

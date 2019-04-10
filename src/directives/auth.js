@@ -1,6 +1,6 @@
 import { SchemaDirectiveVisitor } from 'apollo-server-express';
 import { defaultFieldResolver } from 'graphql';
-import { authenticate, checkRole } from '../auth';
+import { authenticate, checkRoles } from '../auth';
 
 class AuthDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
@@ -8,14 +8,12 @@ class AuthDirective extends SchemaDirectiveVisitor {
     const { roles } = this.args;
 
     field.resolve = function(root, args, context, info) {
-      console.log('Authdirective');
-
       const auth = authenticate(context);
       const newContext = { ...context, auth };
 
-      checkRole(newContext, roles);
+      if (roles) checkRoles(newContext, roles);
 
-      return resolve.apply(this, root, args, { ...context, auth }, info);
+      return resolve.call(this, root, args, newContext, info);
     };
   }
 }

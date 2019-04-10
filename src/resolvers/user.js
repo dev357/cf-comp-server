@@ -1,56 +1,30 @@
-import jwt from 'jsonwebtoken';
-
-export const user = {
-  id: 'test',
-  email: 'test@test.com',
-  roles: ['admin', 'user'],
-  password: 'test'
-};
-
-const aadu = {
-  id: 'aadu',
-  email: 'aadu@lammas.ee',
-  password: 'aadu'
-};
-
-const users = [user, aadu];
-
-const { JWT_SECRET } = process.env;
-
-const generateToken = () => {
-  return jwt.sign(
-    {
-      id: 'test',
-      role: ['ADMIN', 'USER']
-    },
-    JWT_SECRET,
-    { expiresIn: '1d' }
-  );
-};
+import { User } from '../models';
+import { attemptSignIn, generateToken } from '../auth';
 
 export default {
   Query: {
     me: (root, args, context, info) => {
-      return user;
+      return User.findById(context.auth.id);
     },
     users: (root, args, context, info) => {
-      return users;
+      return User.find();
     },
-    greet: (root, args, context, info) => {
-      const name = args.name || 'dude';
-      return `greetings ${name}`;
+    greet: () => {
+      return 'greetings';
     }
   },
 
   Mutation: {
-    signUp: (root, args, req, info) => {
-      console.log('signup');
-      return generateToken();
+    signUp: async (root, args, context, info) => {
+      const user = await User.create({ ...args, roles: [] });
+      return generateToken(user);
     },
-    signIn: (root, args, req, info) => {
-      return generateToken();
+    signIn: async (root, args, context, info) => {
+      const user = await attemptSignIn(args.email, args.password);
+      return generateToken(user);
     },
-    signOut: (root, args, req, info) => {
+    signOut: (root, args, context, info) => {
+      // Not required with JWT
       return true;
     }
   }
