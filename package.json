@@ -1,0 +1,31 @@
+{
+  "name": "apollo-server-auth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon -r esm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev357/apollo-server-auth.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dev357/apollo-server-auth/issues"
+  },
+  "homepage": "https://github.com/dev357/apollo-server-auth#readme",
+  "devDependencies": {
+    "nodemon": "^1.18.11"
+  },
+  "dependencies": {
+    "apollo-server-express": "^2.4.8",
+    "bcryptjs": "^2.4.3",
+    "esm": "^3.2.22",
+    "express": "^4.16.4",
+    "graphql": "^14.2.1",
+    "mongoose": "^5.5.0"
+  }
+}
