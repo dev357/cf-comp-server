@@ -1,15 +1,15 @@
-const user = {
+export const user = {
   id: 'test',
-  email: 'test@test.com'
+  email: 'test@test.com',
+  roles: ['admin', 'user']
 };
 
-const users = [
-  user,
-  {
-    id: 'aadu',
-    email: 'aadu@lammas.ee'
-  }
-];
+const aadu = {
+  id: 'aadu',
+  email: 'aadu@lammas.ee'
+};
+
+const users = [user, aadu];
 
 export default {
   Query: {
@@ -18,6 +18,10 @@ export default {
     },
     users: (root, args, context, info) => {
       return users;
+    },
+    greet: (root, args, context, info) => {
+      const name = args.name || 'dude';
+      return `greetings ${name}`;
     }
   },
 

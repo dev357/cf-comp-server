@@ -18,7 +18,8 @@ const IN_PROD = NODE_ENV === 'production';
       typeDefs,
       resolvers,
       schemaDirectives,
-      playground: !IN_PROD
+      playground: !IN_PROD,
+      context: ({ req, res }) => ({ req, res })
     });
 
     server.applyMiddleware({ app });
