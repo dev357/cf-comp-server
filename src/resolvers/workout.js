@@ -1,27 +1,32 @@
 import { User } from '../models';
+import { Workout } from '../models';
 
 export default {
   Query: {
     scoringTypes: (root, args, context, info) => {
-      return 'scoringTypes';
+      return ['TIME', 'REPS'];
     },
     workout: (root, args, context, info) => {
-      console.log(args);
-      return 'workout';
+      const workout = Workout.findById(args.id);
+      return workout;
     },
     workouts: () => {
-      return 'workouts';
+      const workouts = Workout.find();
+      return workouts;
     }
   },
 
   Mutation: {
     createWorkout: async (root, args, context, info) => {
-      console.log(args);
-      return 'createWorkout';
+      const workout = await Workout.create(args);
+      return workout;
     },
     editWorkout: async (root, args, context, info) => {
-      console.log(args);
-      return 'editWorkout';
+      const workout = await Workout.findByIdAndUpdate(args.id, args, {
+        new: true,
+        runValidators: true
+      });
+      return workout;
     }
   }
 };

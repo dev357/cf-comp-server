@@ -18,7 +18,7 @@ export default gql`
       name: String!
       description: String!
       scoringType: ScoringType!
-    ): String
+    ): Workout
   }
 
   type Workout {
@@ -26,6 +26,8 @@ export default gql`
     name: String!
     description: String!
     scoringType: ScoringType!
+    createdAt: String!
+    updatedAt: String!
   }
 
   enum ScoringType {
